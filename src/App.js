@@ -1,23 +1,12 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import Button from '@material-ui/core/Button'
-import {useSelector, useDispatch} from 'react-redux'
-import login from './actions'
+import Cursos from './components/Cursos'
 
-
-function App() {
-  const loginData = useSelector(state => state.session)
-  const dispatch = useDispatch();
-  const asd = "ASD"
-  
-  return (
-    <div className="App">
-      <h1>TP API REST!</h1>
-      <Button variant="contained" color="primary" onClick={() => {dispatch(login())}}>Login</Button>
-      <h2>login: {loginData.logged ? "True" : "False"}</h2>
-    </div>
-  );
+class App extends React.Component {
+  render(){
+    return (
+        <Cursos/>
+    );
+  }
 }
 
 export default App;

@@ -1,16 +1,17 @@
-const sessionReducer = (state = {logged: false}, action) => {
+const initialState = {
+	currentUser: {}
+  }
+  
+const formReducer = (state = initialState, action) => {
 	switch(action.type){
 		case 'LOGIN':
 			return {
-				logged: true,
-				token: "asd123"
+				...state, currentUser: action.payload
 			}
-		case 'LOGOFF':
-			return {
-				logged: false
-			}
+		case 'LOGOUT':
+			return {...state, currentUser: {} }
 		default:
-			return false
+			return state
 	}
 }
-export default sessionReducer
+export default formReducer
