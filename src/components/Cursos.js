@@ -1,20 +1,20 @@
 import React from 'react';
 import Actions from '../actions'
 import { connect } from 'react-redux'
-import { AppBar, Toolbar, Typography, InputBase, Button} from '@material-ui/core'
+import { AppBar, Toolbar, Typography, InputBase} from '@material-ui/core'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import Collapse from '@material-ui/core/Collapse'
-import { ExpandLess, ExpandMore } from '@material-ui/icons'
-import DeleteIcon from '@material-ui/icons/Delete';
+//import { ExpandLess, ExpandMore } from '@material-ui/icons'
+import IconButton from '@material-ui/core/IconButton';
 import PropTypes from 'prop-types'
 import { fade, withStyles } from "@material-ui/core/styles";
-import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import AddIcon from '@material-ui/icons/Add'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import TextField from '@material-ui/core/TextField';
+import MyDeleteButton from './MyDeleteButton'
 
 const styles = theme => ({
     root: {
@@ -73,17 +73,22 @@ const styles = theme => ({
 
 class Cursos extends React.Component{
 
-    constructor(){
-        super()
-        this.state = { cursos: [], searchFilter: '' }
+    constructor(props){
+        super(props)
+        this.state = { cursos: [], searchFilter: '' , updateData: false}
     }
 
-    componentDidMount(){
+    componentDidMount() {
+        this.getCursos()
+    }
+
+    getCursos = () => {
         fetch('http://127.0.0.1:8000/cursos', { method: 'GET'}).then(
             result => { return result.json() }
         ).then(data => {
             this.setState({ cursos: data.message })
         })
+        this.setState({updateData: false})
     }
 
     handleClick = (e) => {
@@ -91,15 +96,27 @@ class Cursos extends React.Component{
     }
 
     handleValueChange =  (e) => {
-        console.log(e.target.value)
         let nextState = {};
         nextState[e.target.name] = e.target.value;
         this.setState(nextState);
     }
 
+    addCurso = () => {
+        const curso = { tema: this.state.txtTema, anio_de_dictado: this.state.txtAnio, duracion: this.state.txtDuracion }
+        console.log(curso)
+        this.props.addCurso(curso)
+        this.setState({updateData: true})
+    }
+
     render(){
+        const { classes } = this.props
+        // console.log('props: ')
+        // console.log(this.props)
+        // console.log('state: ')
         console.log(this.state)
-        const { classes } = this.props;
+        if(this.state.updateData){
+            this.getCursos()
+        }
         const cursosFiltrados = this.state.cursos.filter(curso => 
             curso.tema.toLowerCase().includes(this.state.searchFilter.toLowerCase()))
         return (
@@ -119,15 +136,15 @@ class Cursos extends React.Component{
                         </Typography>
                         <div className={classes.search}>
                             <InputBase
-                            placeholder="Tema..."
-                            classes={{
-                                root: classes.inputRoot,
-                                input: classes.inputInput,
-                            }}
-                            inputProps={{ 'aria-label': 'search' }}
-                            name="searchFilter"
-                            value={this.state.searchFilter}
-                            onChange={this.handleValueChange}
+                                placeholder="Tema..."
+                                classes={{
+                                    root: classes.inputRoot,
+                                    input: classes.inputInput,
+                                }}
+                                inputProps={{ 'aria-label': 'search' }}
+                                name="searchFilter"
+                                value={this.state.searchFilter}
+                                onChange={this.handleValueChange}
                             />
                         </div>
                         <div className={classes.grow} />
@@ -137,10 +154,25 @@ class Cursos extends React.Component{
                     <Typography variant="h6">
                         Agregar curso:
                     </Typography>
-                    <TextField id="standard-basic" label="Tema" />
-                    <TextField id="standard-basic" label="Año" />
-                    <TextField id="standard-basic" label="Duracion" />
-                    <IconButton >
+                    <TextField 
+                        id="standard-basic" 
+                        label="Tema" 
+                        name="txtTema"
+                        onChange={this.handleValueChange} 
+                    />
+                    <TextField 
+                        id="standard-basic" 
+                        label="Año" 
+                        name="txtAnio" 
+                        onChange={this.handleValueChange} 
+                    />
+                    <TextField 
+                        id="standard-basic" 
+                        label="Duracion" 
+                        name="txtDuracion" 
+                        onChange={this.handleValueChange} 
+                    />
+                    <IconButton onClick={() => this.addCurso()}>
                         <AddIcon />
                     </IconButton>
                 </div>
@@ -156,12 +188,8 @@ class Cursos extends React.Component{
                                     <ListItem button key={curso._id} onClick={this.handleClick.bind(this, curso._id)} >
                                         <ListItemText primary={`Tema: ${curso.tema} - Año: ${curso.anio_de_dictado}
                                          - Duracion: ${curso.duracion}h`} />
-                                        <ListItemSecondaryAction className={classes.button}>
-                                            <IconButton aria-label="delete">
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </ListItemSecondaryAction>
-                                        {this.state[curso._id] ? <ExpandLess /> : <ExpandMore />}
+                                        <ListItemSecondaryAction className={classes.button} children={<MyDeleteButton/>}/>
+                                        {/*this.state[curso._id] ? <ExpandLess /> : <ExpandMore />*/}
                                     </ListItem>
                                     <Collapse key={this.state.cursos._id} component="li" in={this.state[curso._id]} 
                                     timeout="auto" unmountOnExit>
@@ -171,12 +199,7 @@ class Cursos extends React.Component{
                                                     <ListItem button key={alumno._id} className={classes.nested}>
                                                         <ListItemText key={alumno._id} primary={`- DNI: ${alumno.DNI} - Nombre: 
                                                         ${alumno.nombre} - Apellido: ${alumno.apellido} - Nota: ${alumno.nota}`} />                                                        
-                                                        <ListItemSecondaryAction>
-                                                            <IconButton aria-label="delete" 
-                                                                onClick={() => Actions.dropCurso(curso)}>
-                                                                <DeleteIcon />
-                                                            </IconButton>
-                                                        </ListItemSecondaryAction>
+                                                        <ListItemSecondaryAction children={<MyDeleteButton/>}/>
                                                     </ListItem> 
                                                 )
                                             })}
@@ -184,7 +207,7 @@ class Cursos extends React.Component{
                                     </Collapse> 
                                 </div>
                             ) : ( 
-                            <ListItem button onClick={this.handleClick.bind(this, curso._id)} key={curso._id}>
+                            <ListItem button onClick={() => this.handleClick.bind(this, curso._id)} key={curso._id}>
                                 <ListItemText primary={curso.tema}/>
                             </ListItem> )}
                         </div> 
@@ -198,9 +221,11 @@ Cursos.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
-    cursos: state.cursos
-})
+const mapStateToProps = state => {
+    return{
+        cursos: state.cursos
+    }
+}
 
 const mapDispatchToProps = dispatch => ({
     addCurso: curso => dispatch(Actions.addCurso(curso)),
