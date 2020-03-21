@@ -118,7 +118,9 @@ class Cursos extends React.Component{
             this.getCursos()
         }
         const cursosFiltrados = this.state.cursos.filter(curso => 
-            curso.tema.toLowerCase().includes(this.state.searchFilter.toLowerCase()))
+            curso.tema.toLowerCase().includes(this.state.searchFilter.toLowerCase()) || 
+            curso.anio_de_dictado.toString().includes(this.state.searchFilter.toLowerCase()) ||
+            curso.duracion.toString().includes(this.state.searchFilter.toLowerCase()))
         return (
             <div className={classes.grow}>
                 <AppBar position="static">
