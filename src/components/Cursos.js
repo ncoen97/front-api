@@ -75,7 +75,7 @@ class Cursos extends React.Component{
 
     constructor(props){
         super(props)
-        this.state = { cursos: [], searchFilter: '' , updateData: false}
+        this.state = { cursos: [], searchFilter: '' }
     }
 
     componentDidMount() {
@@ -83,12 +83,13 @@ class Cursos extends React.Component{
     }
 
     getCursos = () => {
-        fetch('http://127.0.0.1:8000/cursos', { method: 'GET'}).then(
+        fetch('http://127.0.0.1:8000/cursos', { method: 'GET' }).then(
             result => { return result.json() }
         ).then(data => {
             this.setState({ cursos: data.message })
+        }).then( () => {        
+            this.props.getCursos(this.state.cursos)
         })
-        this.setState({updateData: false})
     }
 
     handleClick = (e) => {
@@ -103,21 +104,16 @@ class Cursos extends React.Component{
 
     addCurso = () => {
         const curso = { tema: this.state.txtTema, anio_de_dictado: this.state.txtAnio, duracion: this.state.txtDuracion }
-        console.log(curso)
         this.props.addCurso(curso)
-        this.setState({updateData: true})
     }
 
     render(){
         const { classes } = this.props
-        // console.log('props: ')
-        // console.log(this.props)
+        console.log('render props')
+        console.log(this.props)
         // console.log('state: ')
-        console.log(this.state)
-        if(this.state.updateData){
-            this.getCursos()
-        }
-        const cursosFiltrados = this.state.cursos.filter(curso => 
+        // console.log(this.state)
+        const cursosFiltrados = this.props.cursos.filter(curso => 
             curso.tema.toLowerCase().includes(this.state.searchFilter.toLowerCase()) || 
             curso.anio_de_dictado.toString().includes(this.state.searchFilter.toLowerCase()) ||
             curso.duracion.toString().includes(this.state.searchFilter.toLowerCase()))
@@ -157,19 +153,19 @@ class Cursos extends React.Component{
                         Agregar curso:
                     </Typography>
                     <TextField 
-                        id="standard-basic" 
+                        id="txtTema" 
                         label="Tema" 
                         name="txtTema"
                         onChange={this.handleValueChange} 
                     />
                     <TextField 
-                        id="standard-basic" 
+                        id="txtAnio" 
                         label="Año" 
                         name="txtAnio" 
                         onChange={this.handleValueChange} 
                     />
                     <TextField 
-                        id="standard-basic" 
+                        id="txtDuracion" 
                         label="Duracion" 
                         name="txtDuracion" 
                         onChange={this.handleValueChange} 
@@ -210,7 +206,9 @@ class Cursos extends React.Component{
                                 </div>
                             ) : ( 
                             <ListItem button onClick={() => this.handleClick.bind(this, curso._id)} key={curso._id}>
-                                <ListItemText primary={curso.tema}/>
+                                <ListItemText primary={`Tema: ${curso.tema} - Año: ${curso.anio_de_dictado}
+                                         - Duracion: ${curso.duracion}h`}/>
+                                <ListItemSecondaryAction className={classes.button} children={<MyDeleteButton/>}/>
                             </ListItem> )}
                         </div> 
                     ))}
@@ -225,11 +223,12 @@ Cursos.propTypes = {
 
 const mapStateToProps = state => {
     return{
-        cursos: state.cursos
+        cursos: state.cursosReducer.cursos
     }
 }
 
 const mapDispatchToProps = dispatch => ({
+    getCursos: cursos => dispatch(Actions.getCursos(cursos)),
     addCurso: curso => dispatch(Actions.addCurso(curso)),
     dropCurso: curso => dispatch(Actions.dropCurso(curso)),
     updateCurso: curso => dispatch(Actions.updateCurso(curso))

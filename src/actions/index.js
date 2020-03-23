@@ -1,3 +1,8 @@
+const getCursos = cursos => ({
+	type: 'GETCURSOS',
+	payload: cursos
+})
+
 const addCurso = curso => ({
 	type: 'ADDCURSO',
 	payload: curso
@@ -21,7 +26,7 @@ const addAlumno = (curso,alumno) => ({
 	}
 })
 const Actions = {
-	addCurso, dropCurso, updateCurso
+	getCursos, addCurso, dropCurso, updateCurso, addAlumno
 }
 export default Actions
 

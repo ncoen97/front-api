@@ -1,10 +1,10 @@
-import CursosReducer from './cursosReducer'
-import SessionReducer from './session'
+import cursosReducer from './cursosReducer'
+import sessionReducer from './session'
 import {combineReducers} from 'redux'
 
 const allReducers = combineReducers({
-	cursos: CursosReducer,
-	sesion: SessionReducer
+	cursosReducer,
+	sessionReducer
 })
 
 export default allReducers
