@@ -109,8 +109,8 @@ class Cursos extends React.Component{
 
     render(){
         const { classes } = this.props
-        console.log('render props')
-        console.log(this.props)
+        // console.log('render props')
+        // console.log(this.props)
         // console.log('state: ')
         // console.log(this.state)
         const cursosFiltrados = this.props.cursos.filter(curso => 
@@ -186,7 +186,7 @@ class Cursos extends React.Component{
                                     <ListItem button key={curso._id} onClick={this.handleClick.bind(this, curso._id)} >
                                         <ListItemText primary={`Tema: ${curso.tema} - Año: ${curso.anio_de_dictado}
                                          - Duracion: ${curso.duracion}h`} />
-                                        <ListItemSecondaryAction className={classes.button} children={<MyDeleteButton/>}/>
+                                        <ListItemSecondaryAction className={classes.button} children={<MyDeleteButton type='curso' cursoId={curso._id}/>}/>
                                         {/*this.state[curso._id] ? <ExpandLess /> : <ExpandMore />*/}
                                     </ListItem>
                                     <Collapse key={this.state.cursos._id} component="li" in={this.state[curso._id]} 
@@ -197,7 +197,7 @@ class Cursos extends React.Component{
                                                     <ListItem button key={alumno._id} className={classes.nested}>
                                                         <ListItemText key={alumno._id} primary={`- DNI: ${alumno.DNI} - Nombre: 
                                                         ${alumno.nombre} - Apellido: ${alumno.apellido} - Nota: ${alumno.nota}`} />                                                        
-                                                        <ListItemSecondaryAction children={<MyDeleteButton/>}/>
+                                                        <ListItemSecondaryAction children={<MyDeleteButton type='alumno'/>}/>
                                                     </ListItem> 
                                                 )
                                             })}
@@ -208,7 +208,7 @@ class Cursos extends React.Component{
                             <ListItem button onClick={() => this.handleClick.bind(this, curso._id)} key={curso._id}>
                                 <ListItemText primary={`Tema: ${curso.tema} - Año: ${curso.anio_de_dictado}
                                          - Duracion: ${curso.duracion}h`}/>
-                                <ListItemSecondaryAction className={classes.button} children={<MyDeleteButton/>}/>
+                                <ListItemSecondaryAction className={classes.button} children={<MyDeleteButton type='curso' cursoId={curso._id}/>}/>
                             </ListItem> )}
                         </div> 
                     ))}
@@ -230,7 +230,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
     getCursos: cursos => dispatch(Actions.getCursos(cursos)),
     addCurso: curso => dispatch(Actions.addCurso(curso)),
-    dropCurso: curso => dispatch(Actions.dropCurso(curso)),
     updateCurso: curso => dispatch(Actions.updateCurso(curso))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Cursos))
