@@ -14,24 +14,23 @@ function addCursoRequest(curso){
     })
 }
 
-function dropCursoRequest(curso){
-    fetch('http://127.0.0.1:8000/cursos/'+curso._id, { 
-        method: 'DELETE',
+function updateCursoRequest(curso){
+    fetch('http://127.0.0.1:8000/cursos/' + curso._id, { 
+        method: 'PUT',
+        body: JSON.stringify(curso),
         headers:{
-            'User-Agent': 'PostmanRuntime/7.23.0',
-            'Accept': '*/*',
-            'Cache-Control': 'no-cache',
-            'Postman-Token': 'df451244-cd2c-4b0a-8979-40d49549d471',
-            'Host': 'localhost:8000',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Content-Length': '',
-            'Connection': 'keep-alive'
+            'Content-Type': 'application/json'
         }
     })
 }
 
+function dropCursoRequest(curso){
+    fetch('http://127.0.0.1:8000/cursos/' + curso._id, { 
+        method: 'DELETE'
+    })
+}
+
 const cursosReducer = function(state = initialState, action){
-    // console.log(state)
     switch(action.type){
         case 'GETCURSOS':
             return {
@@ -54,14 +53,15 @@ const cursosReducer = function(state = initialState, action){
                 cursos: state.cursos.filter(c => c._id !== action.payload._id)
             }
         case 'UPDATECURSO':
+            updateCursoRequest(action.payload)
             return {
                 ...state,
-                cursos: action.payload
-            }
-        case 'ADDALUMNO':
-            return {
-                ...state,
-                cursos: action.payload
+                cursos: state.cursos.map( curso => {
+                    if(curso._id === action.payload._id){
+                        return action.payload
+                    }
+                    else return curso
+                })
             }
         default:
             return state

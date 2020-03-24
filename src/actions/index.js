@@ -18,15 +18,8 @@ const updateCurso = curso => ({
 	payload: curso
 })
 
-const addAlumno = (curso,alumno) => ({
-	type: 'ADDALUMNO',
-	payload: {
-		curso,
-		alumno
-	}
-})
 const Actions = {
-	getCursos, addCurso, dropCurso, updateCurso, addAlumno
+	getCursos, addCurso, dropCurso, updateCurso
 }
 export default Actions
 

@@ -8,6 +8,10 @@ const dropSomething = (props) => {
     if(props.type.localeCompare('curso')){
         //es un alumno
         console.log('Delete alumno')
+        const cursoAUpdatear = props.cursos.find( curso => curso._id === props.cursoId)
+        const alumnosNuevos = cursoAUpdatear.alumno.filter( alumno => alumno._id !== props.alumnoId)
+        cursoAUpdatear.alumno = alumnosNuevos
+        props.updateCurso(cursoAUpdatear)
     }
     else{
         //es un curso

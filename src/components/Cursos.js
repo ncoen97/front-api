@@ -10,7 +10,6 @@ import Collapse from '@material-ui/core/Collapse'
 import IconButton from '@material-ui/core/IconButton';
 import PropTypes from 'prop-types'
 import { fade, withStyles } from "@material-ui/core/styles";
-import MenuIcon from '@material-ui/icons/Menu';
 import AddIcon from '@material-ui/icons/Add'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import TextField from '@material-ui/core/TextField';
@@ -75,7 +74,7 @@ class Cursos extends React.Component{
 
     constructor(props){
         super(props)
-        this.state = { cursos: [], searchFilter: '' }
+        this.state = { cursos: [], searchFilter: '', txtDuracion: '', txtAnio: '', txtTema: '' }
     }
 
     componentDidMount() {
@@ -103,16 +102,19 @@ class Cursos extends React.Component{
     }
 
     addCurso = () => {
-        const curso = { tema: this.state.txtTema, anio_de_dictado: this.state.txtAnio, duracion: this.state.txtDuracion }
-        this.props.addCurso(curso)
+        if(this.state.txtTema !== '' && !isNaN(this.state.txtAnio) && !isNaN(this.state.txtDuracion)){
+            const curso = { tema: this.state.txtTema, anio_de_dictado: this.state.txtAnio, duracion: this.state.txtDuracion }
+            this.props.addCurso(curso)
+            this.setState({ txtDuracion: '', txtAnio: '', txtTema: '' })
+        }
+        else{
+            
+            console.log('Error en el formato')
+        }
     }
 
     render(){
         const { classes } = this.props
-        // console.log('render props')
-        // console.log(this.props)
-        // console.log('state: ')
-        // console.log(this.state)
         const cursosFiltrados = this.props.cursos.filter(curso => 
             curso.tema.toLowerCase().includes(this.state.searchFilter.toLowerCase()) || 
             curso.anio_de_dictado.toString().includes(this.state.searchFilter.toLowerCase()) ||
@@ -121,14 +123,6 @@ class Cursos extends React.Component{
             <div className={classes.grow}>
                 <AppBar position="static">
                     <Toolbar>
-                        <IconButton
-                            edge="start"
-                            className={classes.menuButton}
-                            color="inherit"
-                            aria-label="open drawer"
-                        >
-                            <MenuIcon />
-                        </IconButton>
                         <Typography className={classes.title} variant="h6" noWrap>
                             TP API REST!
                         </Typography>
@@ -156,18 +150,21 @@ class Cursos extends React.Component{
                         id="txtTema" 
                         label="Tema" 
                         name="txtTema"
+                        value={this.state.txtTema}
                         onChange={this.handleValueChange} 
                     />
                     <TextField 
                         id="txtAnio" 
                         label="Año" 
                         name="txtAnio" 
+                        value={this.state.txtAnio}
                         onChange={this.handleValueChange} 
                     />
                     <TextField 
                         id="txtDuracion" 
                         label="Duracion" 
                         name="txtDuracion" 
+                        value={this.state.txtDuracion}
                         onChange={this.handleValueChange} 
                     />
                     <IconButton onClick={() => this.addCurso()}>
@@ -197,7 +194,7 @@ class Cursos extends React.Component{
                                                     <ListItem button key={alumno._id} className={classes.nested}>
                                                         <ListItemText key={alumno._id} primary={`- DNI: ${alumno.DNI} - Nombre: 
                                                         ${alumno.nombre} - Apellido: ${alumno.apellido} - Nota: ${alumno.nota}`} />                                                        
-                                                        <ListItemSecondaryAction children={<MyDeleteButton type='alumno'/>}/>
+                                                        <ListItemSecondaryAction children={<MyDeleteButton type='alumno' cursoId={curso._id} alumnoId={alumno._id}/>}/>
                                                     </ListItem> 
                                                 )
                                             })}
